@@ -4,222 +4,66 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZOMBIE | WL ACCESS</title>
-
 <style>
-:root{
-  --bg:#000;--main:#fff;--secondary:#0a0a0a;
-  --border:#222;--muted:#777;--green:#00ff66;
-}
+/* ... (نفس التنسيقات السابقة بدون تغيير) ... */
+:root{--bg:#000;--main:#fff;--secondary:#0a0a0a;--border:#222;--muted:#777;--green:#00ff66;}
 *{box-sizing:border-box;font-family:'JetBrains Mono','Courier New',monospace}
-
-body{
-  margin:0;
-  background:#000;
-  color:var(--main);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  overflow:hidden;
-}
-
-/* 🌧️ LOGO RAIN */
-.rain{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  pointer-events:none;
-  z-index:0;
-}
-.drop{
-  position:absolute;
-  top:-80px;
-  width:40px;
-  opacity:.06;
-  animation:fall linear infinite;
-}
-@keyframes fall{
-  to{transform:translateY(120vh)}
-}
-
-.container{
-  width:100%;max-width:400px;
-  padding:40px 30px;
-  border:1px solid var(--border);
-  background:var(--secondary);
-  text-align:center;
-  position:relative;
-  z-index:2;
-  box-shadow:0 0 40px rgba(0,255,100,.04);
-}
-
-.logo{
-  width:70px;
-  margin-bottom:25px;
-  opacity:.85;
-  transition:transform .08s linear;
-}
-
-.step{display:none}
-.step.active{display:block}
-
-input{
-  width:100%;
-  background:#000;
-  border:1px solid var(--border);
-  padding:16px;
-  color:#fff;
-  margin-bottom:20px
-}
+body{margin:0;background:#000;color:var(--main);display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+.rain{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.drop{position:absolute;top:-80px;width:40px;opacity:.06;animation:fall linear infinite;}
+@keyframes fall{to{transform:translateY(120vh)}}
+.container{width:100%;max-width:400px;padding:40px 30px;border:1px solid var(--border);background:var(--secondary);text-align:center;position:relative;z-index:2;box-shadow:0 0 40px rgba(0,255,100,.04);}
+.logo{width:70px;margin-bottom:25px;opacity:.85;transition:transform .08s linear;}
+.step{display:none}.step.active{display:block}
+input{width:100%;background:#000;border:1px solid var(--border);padding:16px;color:#fff;margin-bottom:20px}
 input:focus{outline:none;border-color:#fff}
-
-button{
-  width:100%;
-  padding:16px;
-  background:#fff;
-  color:#000;
-  border:none;
-  font-weight:800;
-  cursor:pointer;
-  display:none;
-}
+button{width:100%;padding:16px;background:#fff;color:#000;border:none;font-weight:800;cursor:pointer;display:none;}
 button.show{display:block}
-
-.task{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#000;
-  border:1px solid var(--border);
-  padding:14px;
-  margin-bottom:12px;
-  color:#fff;
-  cursor:pointer;
-}
-.task.done{
-  opacity:.5;
-  border-color:var(--green);
-}
-.task.done::after{
-  content:"✓";
-  color:var(--green);
-}
-
-.loader{
-  width:16px;height:16px;
-  border:2px solid #333;
-  border-top:2px solid var(--green);
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-}
+.task{display:flex;justify-content:space-between;align-items:center;background:#000;border:1px solid var(--border);padding:14px;margin-bottom:12px;color:#fff;cursor:pointer;}
+.task.done{opacity:.5;border-color:var(--green);}
+.task.done::after{content:"✓";color:var(--green);}
+.loader{width:16px;height:16px;border:2px solid #333;border-top:2px solid var(--green);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
+
+<script>
+    // 🛡️ حماية فورية قبل تحميل أي شيء (تمنع الريفريش)
+    if (localStorage.getItem("zombie_done") === "true") {
+        window.stop(); // إيقاف تحميل الصفحة
+        document.documentElement.innerHTML = '<body style="background:#000;color:red;display:flex;justify-content:center;align-items:center;height:100vh;font-family:monospace;"><h2>ACCESS DENIED: ALREADY REGISTERED</h2></body>';
+    }
+</script>
 </head>
 
 <body>
-
 <div class="rain" id="rain"></div>
-
 <div class="container" id="app">
-<img src="logo.png" class="logo" id="mainLogo">
-
-<div id="formContent">
-    <div class="step active" id="s1">
-      <h2>IDENTIFY</h2>
-      <input id="twitter" placeholder="@username">
-      <button id="b1">CONTINUE</button>
-    </div>
-
-    <div class="step" id="s2">
-      <h2>VERIFY</h2>
-      <div class="task" data-id="t1" data-url="https://x.com/zombie_On_base">
-        FOLLOW PROJECT <span></span>
-      </div>
-      <div class="task" data-id="t2" data-url="https://x.com/Venom_w8t">
-        FOLLOW ARTIST <span></span>
-      </div>
-      <button id="b2">NEXT</button>
-    </div>
-
-    <div class="step" id="s3">
-      <h2>ENGAGE</h2>
-      <div class="task" data-id="t3" data-url="https://x.com/i/status/2018804231768289470">
-        LIKE & RT & COMMENT <span></span>
-      </div>
-      <input id="commentLink" placeholder="Paste your Comment Link" style="display:none; margin-top:10px;">
-      <button id="b3">FINAL</button>
-    </div>
-
-    <div class="step" id="s4">
-      <h2>SUBMIT WALLET</h2>
-      <input id="wallet" placeholder="0x...">
-      <button id="b4">GET WHITELISTED</button>
+    <img src="logo.png" class="logo" id="mainLogo">
+    <div id="mainContent">
+        <div class="step active" id="s1">
+            <h2>IDENTIFY</h2>
+            <input id="twitter" placeholder="@username">
+            <button id="b1">CONTINUE</button>
+        </div>
+        <div class="step" id="s2">
+            <h2>VERIFY</h2>
+            <div class="task" data-id="t1" data-url="https://x.com/zombie_On_base">FOLLOW PROJECT <span></span></div>
+            <div class="task" data-id="t2" data-url="https://x.com/Venom_w8t">FOLLOW ARTIST <span></span></div>
+            <button id="b2">NEXT</button>
+        </div>
+        <div class="step" id="s3">
+            <h2>ENGAGE</h2>
+            <div class="task" data-id="t3" data-url="https://x.com/i/status/2018804231768289470">LIKE & RT & COMMENT <span></span></div>
+            <input id="commentLink" placeholder="Paste your Comment Link" style="display:none;">
+            <button id="b3">FINAL</button>
+        </div>
+        <div class="step" id="s4">
+            <h2>SUBMIT WALLET</h2>
+            <input id="wallet" placeholder="0x...">
+            <button id="b4">GET WHITELISTED</button>
+        </div>
     </div>
 </div>
-</div>
-
-<script>
-/* 🚫 CHECK IF ALREADY REGISTERED */
-window.onload = function() {
-    if (localStorage.getItem("zombie_registered") === "true") {
-        document.getElementById("formContent").innerHTML = `<h2>ACCESS DENIED</h2><p style="color:red">This device has already registered.</p>`;
-    }
-};
-
-/* 🌧️ RAIN EFFECT */
-const rain=document.getElementById("rain");
-for(let i=0;i<20;i++){
-  const d=document.createElement("img");
-  d.src="logo.png";
-  d.className="drop";
-  d.style.left=Math.random()*100+"%";
-  d.style.animationDuration=5+Math.random()*8+"s";
-  d.style.animationDelay=Math.random()*-10+"s";
-  rain.appendChild(d);
-}
-
-/* 👁️ LOGO MOVEMENT */
-const logo=document.getElementById("mainLogo");
-document.addEventListener("mousemove",e=>{
-  const x=(e.clientX/window.innerWidth-.5)*20;
-  const y=(e.clientY/window.innerHeight-.5)*20;
-  logo.style.transform=`translate(${x}px,${y}px)`;
-});
-
-/* FLOW LOGIC */
-const steps=["s1","s2","s3","s4"];
-let progress={t1:false,t2:false,t3:false};
-
-const show=i=>{
-  steps.forEach(s=>document.getElementById(s).classList.remove("active"));
-  document.getElementById(steps[i]).classList.add("active");
-};
-
-twitter.oninput=()=>b1.classList.toggle("show",twitter.value.startsWith("@")&&twitter.value.length>3);
-wallet.oninput=()=>b4.classList.toggle("show",wallet.value.startsWith("0x")&&wallet.value.length>30);
-commentLink.oninput=()=>b3.classList.toggle("show", commentLink.value.includes("x.com") || commentLink.value.includes("twitter.com"));
-
-b1.onclick=()=>show(1);
-b2.onclick=()=>show(2);
-b3.onclick=()=>show(3);
-
-document.querySelectorAll(".task").forEach(task=>{
-  task.onclick=()=>{
-    if(task.classList.contains("done"))return;
-    const span=task.querySelector("span");
-    span.innerHTML='<div class="loader"></div>';
-
-    setTimeout(()=>{
-      span.innerHTML="";
-      task.classList.add("done");
-      progress[task.dataset.id]=true;
-      if(progress.t1&&progress.t2)b2.classList.add("show");
-      if(progress.t3) { commentLink.style.display = "block"; }
-      window.open(task.dataset.url,"_blank");
-    },1200);
-  };
-});
-</script>
 
 <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore-compat.js"></script>
@@ -233,27 +77,76 @@ firebase.initializeApp({
   messagingSenderId:"874798974551",
   appId:"1:874798974551:web:baf94cb8571a641941c512"
 });
-const db=firebase.firestore();
+const db = firebase.firestore();
 
-b4.onclick=async()=>{
-  try {
-      await db.collection("whitelist").add({
-        twitter:twitter.value,
-        wallet:wallet.value,
-        comment_link: commentLink.value,
-        tasks:progress,
-        createdAt:new Date()
-      });
-      
-      // ✅ حفظ حالة التسجيل في الجهاز
-      localStorage.setItem("zombie_registered", "true");
-      
-      app.innerHTML=`<h2>SUBMISSION RECEIVED</h2><small>YOU ARE IN.</small>`;
-  } catch(e) {
-      alert("Error saving data. Please try again.");
-  }
+/* RAIN & LOGO EFFECT */
+const rain=document.getElementById("rain");
+for(let i=0;i<20;i++){
+    const d=document.createElement("img"); d.src="logo.png"; d.className="drop";
+    d.style.left=Math.random()*100+"%"; d.style.animationDuration=5+Math.random()*8+"s";
+    rain.appendChild(d);
+}
+
+/* NAVIGATION */
+const show = i => {
+    document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));
+    document.getElementById("s"+(i+1)).classList.add("active");
+};
+
+twitter.oninput=()=>b1.classList.toggle("show", twitter.value.length > 3);
+commentLink.oninput=()=>b3.classList.toggle("show", commentLink.value.includes("x.com"));
+wallet.oninput=()=>b4.classList.toggle("show", wallet.value.length > 30);
+
+b1.onclick=()=>show(1);
+b2.onclick=()=>show(2);
+b3.onclick=()=>show(3);
+
+document.querySelectorAll(".task").forEach(task=>{
+    task.onclick=()=>{
+        if(task.classList.contains("done")) return;
+        task.querySelector("span").innerHTML='<div class="loader"></div>';
+        setTimeout(()=>{
+            task.classList.add("done");
+            task.querySelector("span").innerHTML="";
+            if(document.querySelectorAll(".task[data-id='t1'].done, .task[data-id='t2'].done").length==2) b2.classList.add("show");
+            if(task.dataset.id==="t3") commentLink.style.display="block";
+            window.open(task.dataset.url,"_blank");
+        },1200);
+    };
+});
+
+/* 🚀 FINAL SUBMISSION WITH DOUBLE CHECK */
+b4.onclick = async () => {
+    b4.disabled = true;
+    b4.innerText = "CHECKING...";
+
+    // 1. فحص الـ LocalStorage مرة أخرى
+    if(localStorage.getItem("zombie_done") === "true") {
+        alert("Already registered from this device.");
+        location.reload();
+        return;
+    }
+
+    // 2. فحص إذا كانت المحفظة موجودة مسبقاً في Firebase
+    const check = await db.collection("whitelist").where("wallet", "==", wallet.value).get();
+    if(!check.empty) {
+        alert("This wallet is already registered!");
+        b4.disabled = false;
+        b4.innerText = "GET WHITELISTED";
+        return;
+    }
+
+    // 3. التسجيل
+    await db.collection("whitelist").add({
+        twitter: twitter.value,
+        wallet: wallet.value,
+        comment: commentLink.value,
+        createdAt: new Date()
+    });
+
+    localStorage.setItem("zombie_done", "true");
+    document.getElementById("app").innerHTML = `<h2>SUCCESS</h2><p>YOU ARE WHITELISTED!</p>`;
 };
 </script>
-
 </body>
 </html>
