@@ -3,227 +3,252 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZOMBIE</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+<title>ZOMBIE | WL ACCESS</title>
 
 <style>
-/* ===== RESET ===== */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    outline:none !important;
-    -webkit-tap-highlight-color:transparent;
-    user-select:none;
+:root{
+  --bg:#000;--main:#fff;--secondary:#0a0a0a;
+  --border:#222;--muted:#777;--green:#00ff66;
 }
-*:focus,
-*:active{
-    outline:none !important;
-    box-shadow:none !important;
-}
+*{box-sizing:border-box;font-family:'JetBrains Mono','Courier New',monospace}
 
-/* اخفاء أي Play افتراضي */
-video::-webkit-media-controls,
-video::-webkit-media-controls-overlay-play-button,
-video::-webkit-media-controls-start-playback-button,
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-enclosure{
-    display:none !important;
-}
-
-/* ===== BODY ===== */
 body{
-    background:#000;
-    color:#fff;
-    height:100vh;
-    display:flex;
-    flex-direction:column;
-    font-family:'Creepster', cursive;
+  margin:0;
+  background:#000;
+  color:var(--main);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow:hidden;
 }
 
-/* ===== TOP BAR ===== */
-.top-bar{
-    height:55px;
-    display:flex;
-    align-items:center;
-    padding:0 15px;
-    border-bottom:1px solid rgba(255,255,255,.05);
+/* 🌧️ LOGO RAIN */
+.rain{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+.drop{
+  position:absolute;
+  top:-80px;
+  width:40px;
+  opacity:.06;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(120vh)}
 }
 
-.top-left{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    cursor:pointer;
+/* CONTAINER */
+.container{
+  width:100%;max-width:400px;
+  padding:40px 30px;
+  border:1px solid var(--border);
+  background:var(--secondary);
+  text-align:center;
+  position:relative;
+  z-index:2;
+  box-shadow:0 0 40px rgba(0,255,100,.04);
 }
 
-.top-left img{
-    height:24px;
+/* 🎯 MAIN LOGO (PARALLAX) */
+.logo{
+  width:70px;
+  margin-bottom:25px;
+  opacity:.85;
+  transition:transform .08s linear;
 }
 
-.top-left span{
-    font-size:16px;
-    letter-spacing:2px;
+.step{display:none}
+.step.active{display:block}
+
+input{
+  width:100%;
+  background:#000;
+  border:1px solid var(--border);
+  padding:16px;
+  color:#fff;
+  margin-bottom:20px
+}
+input:focus{outline:none;border-color:#fff}
+
+button{
+  width:100%;
+  padding:16px;
+  background:#fff;
+  color:#000;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
+  display:none;
+}
+button.show{display:block}
+
+/* TASKS */
+.task{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#000;
+  border:1px solid var(--border);
+  padding:14px;
+  margin-bottom:12px;
+  color:#fff;
+  cursor:pointer;
+}
+.task.done{
+  opacity:.5;
+  border-color:var(--green);
+}
+.task.done::after{
+  content:"✓";
+  color:var(--green);
 }
 
-/* Glitch */
-.glitch{
-    animation:glitch .35s linear infinite;
+/* LOADER */
+.loader{
+  width:16px;height:16px;
+  border:2px solid #333;
+  border-top:2px solid var(--green);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
 }
-@keyframes glitch{
-    0%{transform:translate(0)}
-    20%{transform:translate(-2px,1px)}
-    40%{transform:translate(2px,-1px)}
-    60%{transform:translate(-1px,2px)}
-    80%{transform:translate(1px,-2px)}
-    100%{transform:translate(0)}
-}
-
-/* ===== CENTER ===== */
-.center{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    gap:18px;
-}
-
-.tv-wrapper{
-    width:100%;
-    max-width:360px;
-    aspect-ratio:9/16;
-    overflow:hidden;
-    background:#000;
-    cursor:pointer;
-    animation:breathe 6s ease-in-out infinite;
-}
-
-@keyframes breathe{
-    0%,100%{transform:scale(1)}
-    50%{transform:scale(1.01)}
-}
-
-.tv-wrapper video{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    background:#000;
-    pointer-events:none;
-}
-
-/* ===== COMING SOON ===== */
-.coming-soon{
-    font-size:13px;
-    letter-spacing:2px;
-    opacity:.6;
-    animation:flicker 3s infinite;
-}
-
-@keyframes flicker{
-    0%,100%{opacity:.6}
-    50%{opacity:.85}
-}
-
-/* ===== BOTTOM ===== */
-.bottom-icons{
-    height:70px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-top:1px solid rgba(255,255,255,.05);
-}
-
-.bottom-icons a{
-    color:#fff;
-    font-size:22px;
-    opacity:.7;
-    transition:.4s;
-    animation:pulse 2.5s infinite;
-}
-
-@keyframes pulse{
-    0%{transform:scale(1);opacity:.6}
-    50%{transform:scale(1.15);opacity:1}
-    100%{transform:scale(1);opacity:.6}
-}
-
-.bottom-icons a:hover{
-    opacity:1;
-    transform:scale(1.25) rotate(-5deg);
-}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 
 <body>
 
-<!-- TOP -->
-<div class="top-bar">
-    <div class="top-left" onclick="glitchLogo()">
-        <img src="logo.png" id="logo">
-        <span>ZOMBIE</span>
-    </div>
+<!-- 🌧️ BACKGROUND RAIN -->
+<div class="rain" id="rain"></div>
+
+<div class="container" id="app">
+<img src="logo.png" class="logo" id="mainLogo">
+
+<div class="step active" id="s1">
+  <h2>IDENTIFY</h2>
+  <input id="twitter" placeholder="@username">
+  <button id="b1">CONTINUE</button>
 </div>
 
-<!-- CENTER -->
-<div class="center">
-    <div class="tv-wrapper" onclick="startVideo()">
-        <video
-            id="video"
-            src="vid.mp4"
-            muted
-            playsinline
-            preload="auto">
-        </video>
-    </div>
-
-    <div class="coming-soon">
-        FINAL SITE — COMING SOON
-    </div>
+<div class="step" id="s2">
+  <h2>VERIFY</h2>
+  <div class="task" data-id="t1" data-url="https://x.com/zombie_On_base">
+    FOLLOW PROJECT <span></span>
+  </div>
+  <div class="task" data-id="t2" data-url="https://x.com/Venom_w8t">
+    FOLLOW ARTIST <span></span>
+  </div>
+  <button id="b2">NEXT</button>
 </div>
 
-<!-- BOTTOM -->
-<div class="bottom-icons">
-    <a href="https://x.com/zombie_On_base" target="_blank" aria-label="Zombie on X">
-        <i class="fa-brands fa-x-twitter"></i>
-    </a>
+<div class="step" id="s3">
+  <h2>ENGAGE</h2>
+  <div class="task" data-id="t3" data-url="#">
+    LIKE & RT <span></span>
+  </div>
+  <button id="b3">FINAL</button>
 </div>
+
+<div class="step" id="s4">
+  <h2>SUBMIT WALLET</h2>
+  <input id="wallet" placeholder="0x...">
+  <button id="b4">GET WHITELISTED</button>
+</div>
+</div>
+
+<!-- LOGIC -->
+<script>
+/* 🌧️ CREATE LOGO RAIN */
+const rain=document.getElementById("rain");
+for(let i=0;i<20;i++){
+  const d=document.createElement("img");
+  d.src="logo.png";
+  d.className="drop";
+  d.style.left=Math.random()*100+"%";
+  d.style.animationDuration=5+Math.random()*8+"s";
+  d.style.animationDelay=Math.random()*-10+"s";
+  rain.appendChild(d);
+}
+
+/* 👁️ LOGO FOLLOW CURSOR / TOUCH */
+const logo=document.getElementById("mainLogo");
+document.addEventListener("mousemove",e=>{
+  const x=(e.clientX/window.innerWidth-.5)*20;
+  const y=(e.clientY/window.innerHeight-.5)*20;
+  logo.style.transform=`translate(${x}px,${y}px)`;
+});
+document.addEventListener("touchmove",e=>{
+  const t=e.touches[0];
+  const x=(t.clientX/window.innerWidth-.5)*20;
+  const y=(t.clientY/window.innerHeight-.5)*20;
+  logo.style.transform=`translate(${x}px,${y}px)`;
+});
+
+/* FLOW */
+const steps=["s1","s2","s3","s4"];
+let progress={t1:false,t2:false,t3:false};
+
+const show=i=>{
+  steps.forEach(s=>document.getElementById(s).classList.remove("active"));
+  document.getElementById(steps[i]).classList.add("active");
+};
+
+twitter.oninput=()=>b1.classList.toggle("show",twitter.value.startsWith("@")&&twitter.value.length>3);
+wallet.oninput=()=>b4.classList.toggle("show",wallet.value.startsWith("0x")&&wallet.value.length>30);
+
+b1.onclick=()=>show(1);
+b2.onclick=()=>show(2);
+b3.onclick=()=>show(3);
+
+/* TASK LOADING */
+document.querySelectorAll(".task").forEach(task=>{
+  task.onclick=()=>{
+    if(task.classList.contains("done"))return;
+    const span=task.querySelector("span");
+    span.innerHTML='<div class="loader"></div>';
+
+    setTimeout(()=>{
+      span.innerHTML="";
+      task.classList.add("done");
+      progress[task.dataset.id]=true;
+
+      if(progress.t1&&progress.t2)b2.classList.add("show");
+      if(progress.t3)b3.classList.add("show");
+
+      window.open(task.dataset.url,"_blank");
+    },1200);
+  };
+});
+</script>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-const video = document.getElementById("video");
-const logo  = document.getElementById("logo");
-let started = false;
-
-/* تثبيت الفيديو عند 0.6 ثانية */
-video.addEventListener("loadedmetadata", () => {
-    video.currentTime = 0.6;
-    video.pause();
+firebase.initializeApp({
+  apiKey:"AIzaSyBIgHnPUl4aAL7SwRjYCes0gPH-jNFBvs0",
+  authDomain:"zombie-e4324.firebaseapp.com",
+  projectId:"zombie-e4324",
+  storageBucket:"zombie-e4324.firebasestorage.app",
+  messagingSenderId:"874798974551",
+  appId:"1:874798974551:web:baf94cb8571a641941c512"
 });
+const db=firebase.firestore();
 
-/* منع أي تشغيل تلقائي */
-video.addEventListener("timeupdate", () => {
-    if(!started && video.currentTime > 0.65){
-        video.pause();
-        video.currentTime = 0.6;
-    }
-});
-
-/* تشغيل عند أول تفاعل */
-function startVideo(){
-    if(started) return;
-    started = true;
-    video.muted = false;
-    video.play();
-}
-
-/* Glitch Logo */
-function glitchLogo(){
-    logo.classList.add("glitch");
-    setTimeout(()=>logo.classList.remove("glitch"), 700);
-}
+b4.onclick=async()=>{
+  await db.collection("whitelist").add({
+    twitter:twitter.value,
+    wallet:wallet.value,
+    tasks:progress,
+    createdAt:new Date()
+  });
+  app.innerHTML=`<h2>SUBMISSION RECEIVED</h2><small>YOU ARE IN.</small>`;
+};
 </script>
 
 </body>
