@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZOMBIE | WL ACCESS</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --main: #ffffff;
+            --secondary: #0a0a0a;
+            --border: #222222;
+            --text-muted: #777777;
+        }
+
+        * { box-sizing: border-box; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--secondary);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .logo {
+            width: 65px;
+            filter: brightness(2);
+            margin-bottom: 25px;
+        }
+
+        /* Pages System */
+        .step-content { display: none; animation: fadeIn 0.4s ease-out; }
+        .step-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 30px; text-transform: uppercase; }
+
+        /* Inputs */
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 16px;
+            color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--main); }
+
+        /* Tasks */
+        .task-list { margin-bottom: 20px; }
+        .task-item {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--main);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .task-item:hover { border-color: var(--main); background: #111; }
+        .task-item.completed { border-color: #333; color: var(--text-muted); pointer-events: none; }
+        .task-item.completed span { color: #00ff00; }
+
+        /* Action Button */
+        button {
+            width: 100%;
+            background: var(--main);
+            color: #000;
+            border: none;
+            padding: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: none; /* Restricted until task done */
+            transition: 0.3s;
+        }
+
+        button.visible { display: block; animation: slideUp 0.3s ease; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-msg { color: #ff3333; font-size: 0.8rem; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <img src="logo.png" alt="ZOMBIE" class="logo">
+
+    <div class="step-content active" id="step1">
+        <h2>IDENTIFY</h2>
+        <p>ENTER YOUR TWITTER HANDLE</p>
+        <input type="text" id="twitterInput" placeholder="@username" oninput="validateStep1()">
+        <button id="btn1" onclick="next(2)">CONTINUE</button>
+    </div>
+
+    <div class="step-content" id="step2">
+        <h2>VERIFY SOCIALS</h2>
+        <p>FOLLOW THE MISSION COMMANDS</p>
+        <div class="task-list">
+            <a href="https://x.com/zombie_On_base" target="_blank" class="task-item" onclick="markTask(this, 't1')">
+                FOLLOW PROJECT <span>[LINK]</span>
+            </a>
+            <a href="https://x.com/Venom_w8t" target="_blank" class="task-item" onclick="markTask(this, 't2')">
+                FOLLOW ARTIST <span>[LINK]</span>
+            </a>
+        </div>
+        <button id="btn2" onclick="next(3)">NEXT STAGE</button>
+    </div>
+
+    <div class="step-content" id="step3">
+        <h2>PROOF OF WORK</h2>
+        <p>INTERACT TO QUALIFY</p>
+        <div class="task-list">
+            <a href="" target="_blank" class="task-item" onclick="markTask(this, 't3')">
+                LIKE & RETWEET <span>[LINK]</span>
+            </a>
+        </div>
+        <button id="btn3" onclick="next(4)">FINAL STEP</button>
+    </div>
+
+    <div class="step-content" id="step4">
+        <h2>SUBMIT WALLET</h2>
+        <p>ENTER YOUR BASE ADDRESS</p>
+        <input type="text" id="walletInput" placeholder="0x..." oninput="validateStep4()">
+        <button id="btn4" onclick="finalSubmit()">GET WHITELISTED</button>
+    </div>
+</div>
+
+<script>
+    // Anti-Spam / Multi-Entry Protection
+    window.onload = function() {
+        if (localStorage.getItem('zombie_wl_claimed') === 'true') {
+            document.getElementById('app').innerHTML = `
+                <img src="logo.png" class="logo">
+                <h2 style="color:#ff3333">ALREADY REGISTERED</h2>
+                <p>ONE WALLET PER SURVIVOR. STAY TUNED ON X.</p>
+            `;
+        }
+    }
+
+    let progress = { t1: false, t2: false, t3: false };
+
+    function validateStep1() {
+        let val = document.getElementById('twitterInput').value;
+        document.getElementById('btn1').classList.toggle('visible', val.startsWith('@') && val.length > 3);
+    }
+
+    function markTask(el, id) {
+        el.classList.add('completed');
+        el.querySelector('span').innerText = '[DONE]';
+        progress[id] = true;
+        
+        // Show next button only when all tasks in step are done
+        if (progress.t1 && progress.t2) document.getElementById('btn2').classList.add('visible');
+        if (progress.t3) document.getElementById('btn3').classList.add('visible');
+    }
+
+    function validateStep4() {
+        let val = document.getElementById('walletInput').value;
+        document.getElementById('btn4').classList.toggle('visible', val.startsWith('0x') && val.length > 30);
+    }
+
+    function next(step) {
+        document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + step).classList.add('active');
+    }
+
+    function finalSubmit() {
+        // Lock user from registering again
+        localStorage.setItem('zombie_wl_claimed', 'true');
+        
+        document.getElementById('app').innerHTML = `
+            <img src="logo.png" class="logo">
+            <h2>SUBMISSION RECEIVED</h2>
+            <p>YOU ARE IN THE SYSTEM. LFG!</p>
+            <div style="margin-top:20px; font-size:10px; color:#444">VERIFIED BY ZOMBIE_OS</div>
+        `;
+    }
+</script>
+
+</body>
+</html>
