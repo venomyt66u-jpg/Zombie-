@@ -122,7 +122,6 @@ button.show{display:block}
 
 <body>
 
-<!-- 🌧️ BACKGROUND RAIN -->
 <div class="rain" id="rain"></div>
 
 <div class="container" id="app">
@@ -147,9 +146,10 @@ button.show{display:block}
 
 <div class="step" id="s3">
   <h2>ENGAGE</h2>
-  <div class="task" data-id="t3" data-url="#">
-    LIKE & RT <span></span>
+  <div class="task" data-id="t3" data-url="https://x.com/zombie_On_base">
+    LIKE & RT & COMMENT <span></span>
   </div>
+  <input id="commentLink" placeholder="Paste your Comment Link" style="display:none; margin-top:10px;">
   <button id="b3">FINAL</button>
 </div>
 
@@ -160,9 +160,8 @@ button.show{display:block}
 </div>
 </div>
 
-<!-- LOGIC -->
 <script>
-/* 🌧️ CREATE LOGO RAIN */
+/* 🌧️ RAIN EFFECT */
 const rain=document.getElementById("rain");
 for(let i=0;i<20;i++){
   const d=document.createElement("img");
@@ -174,21 +173,15 @@ for(let i=0;i<20;i++){
   rain.appendChild(d);
 }
 
-/* 👁️ LOGO FOLLOW CURSOR / TOUCH */
+/* 👁️ LOGO MOVEMENT */
 const logo=document.getElementById("mainLogo");
 document.addEventListener("mousemove",e=>{
   const x=(e.clientX/window.innerWidth-.5)*20;
   const y=(e.clientY/window.innerHeight-.5)*20;
   logo.style.transform=`translate(${x}px,${y}px)`;
 });
-document.addEventListener("touchmove",e=>{
-  const t=e.touches[0];
-  const x=(t.clientX/window.innerWidth-.5)*20;
-  const y=(t.clientY/window.innerHeight-.5)*20;
-  logo.style.transform=`translate(${x}px,${y}px)`;
-});
 
-/* FLOW */
+/* FLOW LOGIC */
 const steps=["s1","s2","s3","s4"];
 let progress={t1:false,t2:false,t3:false};
 
@@ -199,6 +192,9 @@ const show=i=>{
 
 twitter.oninput=()=>b1.classList.toggle("show",twitter.value.startsWith("@")&&twitter.value.length>3);
 wallet.oninput=()=>b4.classList.toggle("show",wallet.value.startsWith("0x")&&wallet.value.length>30);
+
+// التحقق من وجود رابط الكومنت لتفعيل زر الانتقال للخطوة الأخيرة
+commentLink.oninput=()=>b3.classList.toggle("show", commentLink.value.includes("x.com") || commentLink.value.includes("twitter.com"));
 
 b1.onclick=()=>show(1);
 b2.onclick=()=>show(2);
@@ -217,7 +213,11 @@ document.querySelectorAll(".task").forEach(task=>{
       progress[task.dataset.id]=true;
 
       if(progress.t1&&progress.t2)b2.classList.add("show");
-      if(progress.t3)b3.classList.add("show");
+      
+      // عند الانتهاء من اللايك والريتويت، نظهر حقل إدخال الرابط
+      if(progress.t3) {
+          commentLink.style.display = "block";
+      }
 
       window.open(task.dataset.url,"_blank");
     },1200);
@@ -225,7 +225,6 @@ document.querySelectorAll(".task").forEach(task=>{
 });
 </script>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore-compat.js"></script>
 
@@ -244,6 +243,7 @@ b4.onclick=async()=>{
   await db.collection("whitelist").add({
     twitter:twitter.value,
     wallet:wallet.value,
+    comment_link: commentLink.value, // حفظ رابط الكومنت في قاعدة البيانات
     tasks:progress,
     createdAt:new Date()
   });
