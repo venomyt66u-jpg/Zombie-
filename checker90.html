@@ -15,6 +15,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background-color: var(--bg); color: var(--main); font-family: 'Outfit', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow-x: hidden; }
 
+        /* Ban Overlay - يغطي الشاشة بالكامل للمطرودين */
+        #bannedScreen { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; flex-direction: column; justify-content: center; 
+            align-items: center; text-align: center; padding: 20px;
+        }
+        #bannedScreen h1 { font-family: 'Unbounded'; color: var(--red); font-size: 3rem; margin-bottom: 20px; }
+        #bannedScreen p { font-family: 'Unbounded'; font-size: 1.2rem; color: #fff; line-height: 1.6; }
+
         /* Floating BG */
         .bg-floating { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.03; pointer-events: none; }
         .float-img { position: absolute; width: 80px; animation: move 20s infinite linear; }
@@ -54,12 +63,17 @@
         .t-card i { display: block; font-size: 2rem; margin-bottom: 12px; }
 
         #resultText { margin-top: 20px; font-family: 'Unbounded'; font-size: 10px; font-weight: 900; }
-        #banAlert { color: var(--red); font-family: 'Unbounded'; font-weight: 900; font-size: 14px; margin-top: 30px; display: none; }
 
         @media (min-width: 768px) { .choices-grid { grid-template-columns: repeat(4, 1fr); } }
     </style>
 </head>
 <body>
+
+    <div id="bannedScreen">
+        <h1>GET OUT.</h1>
+        <p>WE DON'T DO "STUPID" HERE.<br>GO BUY YOUR JUNK WHITELIST SOMEWHERE ELSE, LIL BRO.</p>
+        <p style="margin-top: 20px; font-size: 10px; opacity: 0.5;">PERMANENTLY BANNED FROM THE GATEKEEPER</p>
+    </div>
 
     <div class="bg-floating" id="bgArea"></div>
 
@@ -75,7 +89,6 @@
             <div class="choice-item" onclick="handleChoice(3)"><div class="img-box"><img src="choice3.png"></div><p>VILLA</p></div>
             <div class="choice-item" onclick="handleChoice(4)"><div class="img-box"><img src="choice4.png"></div><p>WL</p></div>
         </div>
-        <div id="banAlert">ACCESS DENIED. WE DON'T ACCEPT FOOLS HERE.</div>
     </div>
 
     <div id="checkerPage" class="page">
@@ -99,6 +112,20 @@
     <audio id="talkSound" src="https://www.myinstants.com/media/sounds/gta-san-andreas-ah-shit-here-we-go-again.mp3"></audio>
 
     <script>
+        // Check Ban Status on Load
+        window.onload = function() {
+            if (localStorage.getItem('isBanned') === 'true') {
+                showBanScreen();
+            }
+        };
+
+        function showBanScreen() {
+            document.getElementById('bannedScreen').style.display = 'flex';
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('checkerPage').style.display = 'none';
+            document.body.style.overflow = 'hidden';
+        }
+
         // Floating Background
         const bgArea = document.getElementById('bgArea');
         for(let i=0; i<8; i++) {
@@ -109,11 +136,16 @@
 
         function handleChoice(id) {
             if (id === 4) {
+                // Ban Logic
+                localStorage.setItem('isBanned', 'true');
                 document.getElementById('getOutSound').play();
                 const b = document.getElementById('trapBubble');
-                b.innerText = "RU F**KIN STUPID? WHO HAS THIS MONEY AND BUYS A WHITELIST? GET OUT OF HERE, U MORON!";
+                b.innerText = "U Srs? WL over a Villa? Get outta here, you absolute clown!";
                 b.classList.add('show');
-                document.getElementById('banAlert').style.display = 'block';
+                
+                setTimeout(() => {
+                    showBanScreen();
+                }, 2500); // Give him 2.5 seconds to read the insult before the ban screen
             } else {
                 document.getElementById('landingPage').classList.remove('active-page');
                 document.getElementById('checkerPage').classList.add('active-page');
@@ -143,12 +175,10 @@
             
             if(!inputAddr) return;
 
-            // Reset
             resultText.innerText = "SEARCHING THE VOID...";
             document.querySelectorAll('.t-card').forEach(c => c.classList.remove('active'));
             btn.disabled = true;
 
-            // Fetch all databases
             const [gtdData, fcfsData, publicData] = await Promise.all([
                 fetchFile('GTD (1).csv'),
                 fetchFile('FCFS (2).csv'),
