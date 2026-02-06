@@ -10,7 +10,7 @@
     
     <style>
         :root {
-            --bg: #030303; --main: #ffffff; --red: #ff3e3e; --glass: rgba(255, 255, 255, 0.03); --btc-color: #f7931a;
+            --bg: #030303; --main: #ffffff; --red: #ff3e3e; --glass: rgba(255, 255, 255, 0.03); --btc-color: #f7931a; --base-blue: #0052ff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background-color: var(--bg); color: var(--main); font-family: 'Outfit', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow-x: hidden; }
@@ -54,11 +54,21 @@
         .choice-item p { font-size: 12px; font-family: 'Unbounded'; font-weight: 900; color: #fff; text-transform: uppercase; }
 
         /* Checker UI */
-        .checker-box { background: var(--glass); padding: 40px 20px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); }
-        .wallet-input { width: 100%; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.1); padding: 22px; color: #fff; font-family: 'Outfit'; font-weight: 700; text-align: center; border-radius: 20px; margin-bottom: 20px; font-size: 1rem; }
+        .checker-box { background: var(--glass); padding: 40px 20px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .wallet-input { width: 100%; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.1); padding: 22px; color: #fff; font-family: 'Outfit'; font-weight: 700; text-align: center; border-radius: 20px; margin-bottom: 20px; font-size: 1rem; transition: 0.5s; }
+        .wallet-input.blur-mode { filter: blur(8px); opacity: 0.5; pointer-events: none; }
+        
         .btn-scan { width: 100%; background: #fff; color: #000; padding: 22px; border-radius: 20px; font-family: 'Unbounded'; font-weight: 900; font-size: 13px; cursor: pointer; border: none; }
         
-        /* Tiers with Prices */
+        /* Share Button */
+        #shareBtn { 
+            display: none; width: 100%; background: #1da1f2; color: #fff; padding: 18px; 
+            border-radius: 20px; font-family: 'Unbounded'; font-weight: 900; font-size: 12px; 
+            cursor: pointer; border: none; margin-top: 15px; animation: fadeIn 0.5s ease;
+        }
+        #shareBtn i { margin-right: 10px; }
+
+        /* Tiers */
         .tiers { display: flex; justify-content: space-between; margin-top: 40px; gap: 8px; }
         .t-card { flex: 1; padding: 20px 5px; background: var(--glass); border-radius: 20px; opacity: 0.15; transition: 0.6s; border: 1px solid transparent; }
         .t-card.active { opacity: 1; border: 1px solid #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); transform: translateY(-5px); }
@@ -89,9 +99,9 @@
         </div>
         <h2 class="q-title">IF YOU OWNED 1 BTC <i class="fa-brands fa-bitcoin" style="color:#f7931a"></i><br>WHAT WOULD YOU BUY?</h2>
         <div class="choices-grid">
-            <div class="choice-item" onclick="handleChoice(1)"><div class="img-box"><img src="choice1.png"></div><p>LAMBO</p></div>
-            <div class="choice-item" onclick="handleChoice(2)"><div class="img-box"><img src="choice2.png"></div><p>PENTHOUSE</p></div>
-            <div class="choice-item" onclick="handleChoice(3)"><div class="img-box"><img src="choice3.png"></div><p>ROLEX</p></div>
+            <div class="choice-item" onclick="handleChoice(1)"><div class="img-box"><img src="choice1.png"></div><p>SUPRA</p></div>
+            <div class="choice-item" onclick="handleChoice(2)"><div class="img-box"><img src="choice2.png"></div><p>YACHT</p></div>
+            <div class="choice-item" onclick="handleChoice(3)"><div class="img-box"><img src="choice3.png"></div><p>VILLA</p></div>
             <div class="choice-item" onclick="handleChoice(4)"><div class="img-box"><img src="choice4.png"></div><p>WL</p></div>
         </div>
     </div>
@@ -104,6 +114,9 @@
         <div class="checker-box">
             <input type="text" class="wallet-input" id="walletInput" placeholder="PASTE ADDR (0x...)">
             <button class="btn-scan" onclick="checkEligibility()">INDEX DATA</button>
+            
+            <button id="shareBtn" onclick="shareToTwitter()"><i class="fa-brands fa-x-twitter"></i> SHARE MY STATUS</button>
+            
             <div id="resultText"></div>
             <div class="tiers">
                 <div class="t-card" id="t-gtd">
@@ -129,6 +142,8 @@
     <audio id="talkSound" src="https://www.myinstants.com/media/sounds/gta-san-andreas-ah-shit-here-we-go-again.mp3"></audio>
 
     <script>
+        let currentTier = "";
+
         window.onload = function() {
             if (localStorage.getItem('isBanned') === 'true') showBanScreen();
         };
@@ -177,15 +192,19 @@
         }
 
         async function checkEligibility() {
-            const inputAddr = document.getElementById('walletInput').value.trim().toLowerCase();
+            const inputField = document.getElementById('walletInput');
+            const inputAddr = inputField.value.trim().toLowerCase();
             const resultText = document.getElementById('resultText');
             const btn = document.querySelector('.btn-scan');
+            const shareBtn = document.getElementById('shareBtn');
             
             if(!inputAddr) return;
 
             resultText.innerText = "QUERYING ON-CHAIN DATA...";
             document.querySelectorAll('.t-card').forEach(c => c.classList.remove('active'));
             btn.disabled = true;
+            shareBtn.style.display = "none";
+            inputField.classList.remove('blur-mode');
 
             const [g30, g40, fcfs] = await Promise.all([
                 fetchFile('GTD30.csv'),
@@ -196,20 +215,32 @@
             setTimeout(() => {
                 btn.disabled = false;
                 btn.innerText = "INDEX DATA";
+                inputField.classList.add('blur-mode'); // Blur the wallet address for privacy
 
                 if (g30.includes(inputAddr) || g40.includes(inputAddr)) {
                     document.getElementById('t-gtd').classList.add('active');
                     resultText.innerHTML = "<span style='color:white'>BULLISH. GTD ROLE DETECTED.</span>";
+                    currentTier = "GTD (FREE MINT)";
                 } 
                 else if (fcfs.includes(inputAddr)) {
                     document.getElementById('t-fcfs').classList.add('active');
                     resultText.innerHTML = "<span style='color:white'>SECURED. FCFS SPOTTED.</span>";
+                    currentTier = "FCFS (0.0004)";
                 } 
                 else {
                     document.getElementById('t-pub').classList.add('active');
                     resultText.innerHTML = "<span style='color:white'>YOU ARE PUBLIC. MINT THE FLOOR.</span>";
+                    currentTier = "PUBLIC (0.00089)";
                 }
+                
+                shareBtn.style.display = "block"; // Show Twitter Share button
             }, 1000);
+        }
+
+        function shareToTwitter() {
+            const text = `I just checked my status on @Zombie_on_base Gatekeeper! 🧟‍♂️🔥\n\nTier: ${currentTier}\n\nDon't sleep on the undead. WAGMI! 🚀\n\nCheck yours here: `;
+            const url = window.location.href;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
         }
     </script>
 </body>
