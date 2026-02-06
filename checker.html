@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GTD | THE GATEKEEPER</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;900&family=Outfit:wght@300;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #030303; --main: #ffffff; --red: #ff3e3e; --glass: rgba(255, 255, 255, 0.03); --btc-color: #f7931a; --base-blue: #0052ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background-color: var(--bg); color: var(--main); font-family: 'Outfit', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow-x: hidden; }
+
+        /* Ban Overlay */
+        #bannedScreen { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; flex-direction: column; justify-content: center; 
+            align-items: center; text-align: center; padding: 20px;
+        }
+        #bannedScreen h1 { font-family: 'Unbounded'; color: var(--red); font-size: 3rem; margin-bottom: 20px; }
+        #bannedScreen p { font-family: 'Unbounded'; font-size: 1.2rem; color: #fff; line-height: 1.6; }
+
+        /* Floating BG */
+        .bg-floating { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.03; pointer-events: none; }
+        .float-img { position: absolute; width: 80px; animation: move 20s infinite linear; }
+        @keyframes move { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(100vw, 100vh) rotate(360deg); } }
+
+        .page { display: none; width: 95%; max-width: 600px; text-align: center; animation: fadeIn 0.4s ease-out; padding: 20px; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Logo & Mouth Bubble */
+        .logo-wrap { position: relative; margin-bottom: 40px; display: inline-block; }
+        .logo-img { width: 160px; height: auto; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 5; }
+        .bubble {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            background: var(--main); color: #000; padding: 20px; border-radius: 30px;
+            font-family: 'Unbounded'; font-weight: 900; font-size: 11px; width: 280px; z-index: 20;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
+            box-shadow: 0 15px 50px rgba(255,255,255,0.4); line-height: 1.4;
+        }
+        .bubble.show { transform: translate(-50%, -60%) scale(1); }
+
+        /* Phases UI */
+        .q-title { font-family: 'Unbounded'; font-size: 1.4rem; margin-bottom: 40px; }
+        .choices-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .choice-item { cursor: pointer; transition: 0.3s; }
+        .img-box { width: 100%; aspect-ratio: 1/1; background: var(--glass); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; margin-bottom: 12px; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .choice-item p { font-size: 12px; font-family: 'Unbounded'; font-weight: 900; color: #fff; text-transform: uppercase; }
+
+        /* Checker UI */
+        .checker-box { background: var(--glass); padding: 40px 20px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .wallet-input { width: 100%; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.1); padding: 22px; color: #fff; font-family: 'Outfit'; font-weight: 700; text-align: center; border-radius: 20px; margin-bottom: 20px; font-size: 1rem; transition: 0.5s; }
+        .wallet-input.blur-mode { filter: blur(8px); opacity: 0.5; pointer-events: none; }
+        
+        .btn-scan { width: 100%; background: #fff; color: #000; padding: 22px; border-radius: 20px; font-family: 'Unbounded'; font-weight: 900; font-size: 13px; cursor: pointer; border: none; text-transform: uppercase; }
+        
+        /* Share Button */
+        #shareBtn { 
+            display: none; width: 100%; background: #1da1f2; color: #fff; padding: 18px; 
+            border-radius: 20px; font-family: 'Unbounded'; font-weight: 900; font-size: 12px; 
+            cursor: pointer; border: none; margin-top: 15px; animation: fadeIn 0.5s ease;
+        }
+        #shareBtn i { margin-right: 10px; }
+
+        /* Tiers */
+        .tiers { display: flex; justify-content: space-between; margin-top: 40px; gap: 8px; }
+        .t-card { flex: 1; padding: 20px 5px; background: var(--glass); border-radius: 20px; opacity: 0.15; transition: 0.6s; border: 1px solid transparent; }
+        .t-card.active { opacity: 1; border: 1px solid #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); transform: translateY(-5px); }
+        .t-card i { display: block; font-size: 1.5rem; margin-bottom: 10px; }
+        .t-card b { display: block; font-size: 10px; font-family: 'Unbounded'; }
+        .t-price { display: block; font-size: 9px; margin-top: 8px; color: #aaa; font-weight: 700; }
+        .t-card.active .t-price { color: #fff; }
+
+        #resultText { margin-top: 25px; font-family: 'Unbounded'; font-size: 11px; font-weight: 900; letter-spacing: 1px; }
+
+        @media (min-width: 768px) { .choices-grid { grid-template-columns: repeat(4, 1fr); } }
+    </style>
+</head>
+<body>
+
+    <div id="bannedScreen">
+        <h1>NGMI.</h1>
+        <p>COPE HARDER, LIL BRO.<br>WE DON'T SERVE EXIT LIQUIDITY HERE.</p>
+        <p style="margin-top: 20px; font-size: 10px; opacity: 0.5;">PERMANENTLY BLACKLISTED | MID-CURVE DETECTED</p>
+    </div>
+
+    <div class="bg-floating" id="bgArea"></div>
+
+    <div id="landingPage" class="page active-page">
+        <div class="logo-wrap">
+            <div class="bubble" id="trapBubble"></div>
+            <img src="logo.png" class="logo-img" alt="LOGO">
+        </div>
+        <h2 class="q-title">IF YOU OWNED 1 BTC <i class="fa-brands fa-bitcoin" style="color:#f7931a"></i><br>WHAT WOULD YOU BUY?</h2>
+        <div class="choices-grid">
+            <div class="choice-item" onclick="handleChoice(1)"><div class="img-box"><img src="choice1.png"></div><p>SUPRA</p></div>
+            <div class="choice-item" onclick="handleChoice(2)"><div class="img-box"><img src="choice2.png"></div><p>YACHT</p></div>
+            <div class="choice-item" onclick="handleChoice(3)"><div class="img-box"><img src="choice3.png"></div><p>VILLA</p></div>
+            <div class="choice-item" onclick="handleChoice(4)"><div class="img-box"><img src="choice4.png"></div><p>WL</p></div>
+        </div>
+    </div>
+
+    <div id="checkerPage" class="page">
+        <div class="logo-wrap">
+            <div class="bubble" id="checkerBubble">"WAGMI. PLUG YOUR ADDR, WHALE."</div>
+            <img src="logo.png" class="logo-img" alt="LOGO" onclick="triggerTalk()">
+        </div>
+        <div class="checker-box">
+            <input type="text" class="wallet-input" id="walletInput" placeholder="PASTE ADDR (0x...)">
+            <button class="btn-scan" onclick="checkEligibility()">CHECK</button>
+            
+            <button id="shareBtn" onclick="shareToTwitter()"><i class="fa-brands fa-x-twitter"></i> SHARE MY STATUS</button>
+            
+            <div id="resultText"></div>
+            <div class="tiers">
+                <div class="t-card" id="t-gtd">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                    <b>GTD</b>
+                    <span class="t-price">FREE</span>
+                </div>
+                <div class="t-card" id="t-fcfs">
+                    <i class="fa-solid fa-fire-flame-curved"></i>
+                    <b>FCFS</b>
+                    <span class="t-price">0.0004</span>
+                </div>
+                <div class="t-card" id="t-pub">
+                    <i class="fa-solid fa-skull"></i>
+                    <b>PUBLIC</b>
+                    <span class="t-price">0.00089</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="getOutSound" src="https://www.myinstants.com/media/sounds/get-out-meme.mp3"></audio>
+    <audio id="talkSound" src="https://www.myinstants.com/media/sounds/gta-san-andreas-ah-shit-here-we-go-again.mp3"></audio>
+
+    <script>
+        let currentTier = "";
+
+        window.onload = function() {
+            if (localStorage.getItem('isBanned') === 'true') showBanScreen();
+        };
+
+        function showBanScreen() {
+            document.getElementById('bannedScreen').style.display = 'flex';
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('checkerPage').style.display = 'none';
+            document.body.style.overflow = 'hidden';
+        }
+
+        const bgArea = document.getElementById('bgArea');
+        for(let i=0; i<8; i++) {
+            let img = document.createElement('img'); img.src = 'logo.png'; img.className = 'float-img';
+            img.style.left = Math.random() * 100 + 'vw'; img.style.top = Math.random() * 100 + 'vh';
+            img.style.animationDuration = (15 + Math.random() * 15) + 's'; bgArea.appendChild(img);
+        }
+
+        function handleChoice(id) {
+            if (id === 4) {
+                localStorage.setItem('isBanned', 'true');
+                document.getElementById('getOutSound').play();
+                const b = document.getElementById('trapBubble');
+                b.innerText = "SERIOUSLY? WL OVER REAL ASSETS? COPE HARDER, BOT!";
+                b.classList.add('show');
+                setTimeout(() => { showBanScreen(); }, 2500);
+            } else {
+                document.getElementById('landingPage').classList.remove('active-page');
+                document.getElementById('checkerPage').classList.add('active-page');
+            }
+        }
+
+        function triggerTalk() {
+            document.getElementById('talkSound').play();
+            const b = document.getElementById('checkerBubble');
+            b.classList.add('show');
+            setTimeout(() => b.classList.remove('show'), 4000);
+        }
+
+        async function fetchFile(fileName) {
+            try {
+                const response = await fetch(fileName);
+                const text = await response.text();
+                return text.toLowerCase().split(/\r?\n/).map(addr => addr.trim()).filter(addr => addr !== "");
+            } catch (e) { return []; }
+        }
+
+        async function checkEligibility() {
+            const inputField = document.getElementById('walletInput');
+            const inputAddr = inputField.value.trim().toLowerCase();
+            const resultText = document.getElementById('resultText');
+            const btn = document.querySelector('.btn-scan');
+            const shareBtn = document.getElementById('shareBtn');
+            
+            if(!inputAddr) return;
+
+            resultText.innerText = "CHECKING ON-CHAIN STATUS...";
+            document.querySelectorAll('.t-card').forEach(c => c.classList.remove('active'));
+            btn.disabled = true;
+            shareBtn.style.display = "none";
+            inputField.classList.remove('blur-mode');
+
+            const [g30, g40, fcfs] = await Promise.all([
+                fetchFile('GTD30.csv'),
+                fetchFile('GTD40.csv'),
+                fetchFile('FCFS.csv')
+            ]);
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = "CHECK";
+                inputField.classList.add('blur-mode'); 
+
+                if (g30.includes(inputAddr) || g40.includes(inputAddr)) {
+                    document.getElementById('t-gtd').classList.add('active');
+                    resultText.innerHTML = "<span style='color:white'>BULLISH. GTD ROLE DETECTED.</span>";
+                    currentTier = "GTD (FREE MINT)";
+                } 
+                else if (fcfs.includes(inputAddr)) {
+                    document.getElementById('t-fcfs').classList.add('active');
+                    resultText.innerHTML = "<span style='color:white'>SECURED. FCFS SPOTTED.</span>";
+                    currentTier = "FCFS (0.0004)";
+                } 
+                else {
+                    document.getElementById('t-pub').classList.add('active');
+                    resultText.innerHTML = "<span style='color:white'>YOU ARE PUBLIC. MINT THE FLOOR.</span>";
+                    currentTier = "PUBLIC (0.00089)";
+                }
+                
+                shareBtn.style.display = "block"; 
+            }, 1000);
+        }
+
+        function shareToTwitter() {
+            const text = `I just checked my status on @Zombie_on_base Gatekeeper! 🧟‍♂️🔥\n\nTier: ${currentTier}\n\nDon't sleep on the undead. WAGMI! 🚀\n\nCheck yours here: `;
+            const url = window.location.href;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
