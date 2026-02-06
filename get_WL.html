@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GET WL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: radial-gradient(circle at center, #0a0a0a, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .container {
+            text-align: center;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .logo {
+            width: 140px;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
+        }
+
+        .btn {
+            padding: 20px 60px;
+            font-size: 22px;
+            letter-spacing: 3px;
+            background: #ffffff;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 30px rgba(255,255,255,0.35);
+        }
+
+        .btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 60px rgba(255,255,255,0.7);
+        }
+
+        .scary {
+            background: red !important;
+            color: white !important;
+            box-shadow: 0 0 80px red !important;
+            animation: glitch 0.2s infinite, shake 0.15s infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glitch {
+            0% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(120deg); }
+            100% { filter: hue-rotate(0deg); }
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- اللوجو -->
+        <img src="logo.png" alt="Logo" class="logo">
+
+        <!-- زر GET WL -->
+        <button class="btn" id="wlBtn">GET WL</button>
+    </div>
+
+    <script>
+        const btn = document.getElementById("wlBtn");
+
+        btn.addEventListener("click", () => {
+            btn.classList.add("scary");
+            btn.innerText = "ENTERING...";
+
+            setTimeout(() => {
+                window.location.href = "https://forms.gle/iCnDDbHDHfqnWjAd8";
+            }, 1200);
+        });
+    </script>
+
+</body>
+</html>
