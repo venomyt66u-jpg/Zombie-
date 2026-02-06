@@ -206,6 +206,7 @@
             shareBtn.style.display = "none";
             inputField.classList.remove('blur-mode');
 
+            // جلب الملفات الثلاثة
             const [g30, g40, fcfs] = await Promise.all([
                 fetchFile('GTD30.csv'),
                 fetchFile('GTD40.csv'),
@@ -217,16 +218,19 @@
                 btn.innerText = "CHECK";
                 inputField.classList.add('blur-mode'); 
 
+                // التحقق من GTD (سواء كان في ملف 30 أو 40)
                 if (g30.includes(inputAddr) || g40.includes(inputAddr)) {
                     document.getElementById('t-gtd').classList.add('active');
                     resultText.innerHTML = "<span style='color:white'>BULLISH. GTD ROLE DETECTED.</span>";
                     currentTier = "GTD (FREE MINT)";
                 } 
+                // التحقق من FCFS
                 else if (fcfs.includes(inputAddr)) {
                     document.getElementById('t-fcfs').classList.add('active');
                     resultText.innerHTML = "<span style='color:white'>SECURED. FCFS SPOTTED.</span>";
                     currentTier = "FCFS (0.0004)";
                 } 
+                // أي شيء آخر هو Public
                 else {
                     document.getElementById('t-pub').classList.add('active');
                     resultText.innerHTML = "<span style='color:white'>YOU ARE PUBLIC. MINT THE FLOOR.</span>";
