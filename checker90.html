@@ -57,12 +57,17 @@
         .checker-box { background: var(--glass); padding: 40px 20px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); }
         .wallet-input { width: 100%; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.1); padding: 22px; color: #fff; font-family: 'Outfit'; font-weight: 700; text-align: center; border-radius: 20px; margin-bottom: 20px; font-size: 1rem; }
         .btn-scan { width: 100%; background: #fff; color: #000; padding: 22px; border-radius: 20px; font-family: 'Unbounded'; font-weight: 900; font-size: 13px; cursor: pointer; border: none; }
-        .tiers { display: flex; justify-content: space-between; margin-top: 40px; gap: 10px; }
-        .t-card { flex: 1; padding: 25px 10px; background: var(--glass); border-radius: 25px; opacity: 0.1; transition: 0.6s; }
-        .t-card.active { opacity: 1; border: 1px solid #fff; box-shadow: 0 0 20px white; }
-        .t-card i { display: block; font-size: 2rem; margin-bottom: 12px; }
+        
+        /* Tiers with Prices */
+        .tiers { display: flex; justify-content: space-between; margin-top: 40px; gap: 8px; }
+        .t-card { flex: 1; padding: 20px 5px; background: var(--glass); border-radius: 20px; opacity: 0.15; transition: 0.6s; border: 1px solid transparent; }
+        .t-card.active { opacity: 1; border: 1px solid #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); transform: translateY(-5px); }
+        .t-card i { display: block; font-size: 1.5rem; margin-bottom: 10px; }
+        .t-card b { display: block; font-size: 10px; font-family: 'Unbounded'; }
+        .t-price { display: block; font-size: 9px; margin-top: 8px; color: #aaa; font-weight: 700; }
+        .t-card.active .t-price { color: #fff; }
 
-        #resultText { margin-top: 20px; font-family: 'Unbounded'; font-size: 10px; font-weight: 900; }
+        #resultText { margin-top: 25px; font-family: 'Unbounded'; font-size: 11px; font-weight: 900; letter-spacing: 1px; }
 
         @media (min-width: 768px) { .choices-grid { grid-template-columns: repeat(4, 1fr); } }
     </style>
@@ -70,9 +75,9 @@
 <body>
 
     <div id="bannedScreen">
-        <h1>GET OUT.</h1>
-        <p>WE DON'T DO "STUPID" HERE.<br>GO BUY YOUR JUNK WHITELIST SOMEWHERE ELSE, LIL BRO.</p>
-        <p style="margin-top: 20px; font-size: 10px; opacity: 0.5;">PERMANENTLY BANNED FROM THE GATEKEEPER</p>
+        <h1>NGMI.</h1>
+        <p>COPE HARDER, LIL BRO.<br>WE DON'T SERVE EXIT LIQUIDITY HERE.</p>
+        <p style="margin-top: 20px; font-size: 10px; opacity: 0.5;">PERMANENTLY BLACKLISTED | MID-CURVE DETECTED</p>
     </div>
 
     <div class="bg-floating" id="bgArea"></div>
@@ -84,26 +89,38 @@
         </div>
         <h2 class="q-title">IF YOU OWNED 1 BTC <i class="fa-brands fa-bitcoin" style="color:#f7931a"></i><br>WHAT WOULD YOU BUY?</h2>
         <div class="choices-grid">
-            <div class="choice-item" onclick="handleChoice(1)"><div class="img-box"><img src="choice1.png"></div><p>SUPRA</p></div>
-            <div class="choice-item" onclick="handleChoice(2)"><div class="img-box"><img src="choice2.png"></div><p>YACHT</p></div>
-            <div class="choice-item" onclick="handleChoice(3)"><div class="img-box"><img src="choice3.png"></div><p>VILLA</p></div>
+            <div class="choice-item" onclick="handleChoice(1)"><div class="img-box"><img src="choice1.png"></div><p>LAMBO</p></div>
+            <div class="choice-item" onclick="handleChoice(2)"><div class="img-box"><img src="choice2.png"></div><p>PENTHOUSE</p></div>
+            <div class="choice-item" onclick="handleChoice(3)"><div class="img-box"><img src="choice3.png"></div><p>ROLEX</p></div>
             <div class="choice-item" onclick="handleChoice(4)"><div class="img-box"><img src="choice4.png"></div><p>WL</p></div>
         </div>
     </div>
 
     <div id="checkerPage" class="page">
         <div class="logo-wrap">
-            <div class="bubble" id="checkerBubble">"WAGMI. ENTER YOUR ADDR, LEGEND."</div>
+            <div class="bubble" id="checkerBubble">"WAGMI. PLUG YOUR ADDR, WHALE."</div>
             <img src="logo.png" class="logo-img" alt="LOGO" onclick="triggerTalk()">
         </div>
         <div class="checker-box">
-            <input type="text" class="wallet-input" id="walletInput" placeholder="PASTE ADDRESS (0x...)">
-            <button class="btn-scan" onclick="checkEligibility()">SCAN DATA</button>
+            <input type="text" class="wallet-input" id="walletInput" placeholder="PASTE ADDR (0x...)">
+            <button class="btn-scan" onclick="checkEligibility()">INDEX DATA</button>
             <div id="resultText"></div>
             <div class="tiers">
-                <div class="t-card" id="t-gtd"><i class="fa-solid fa-bolt-lightning"></i><b>GTD</b></div>
-                <div class="t-card" id="t-fcfs"><i class="fa-solid fa-fire-flame-curved"></i><b>FCFS</b></div>
-                <div class="t-card" id="t-pub"><i class="fa-solid fa-skull"></i><b>PUBLIC</b></div>
+                <div class="t-card" id="t-gtd">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                    <b>GTD</b>
+                    <span class="t-price">FREE</span>
+                </div>
+                <div class="t-card" id="t-fcfs">
+                    <i class="fa-solid fa-fire-flame-curved"></i>
+                    <b>FCFS</b>
+                    <span class="t-price">0.0004</span>
+                </div>
+                <div class="t-card" id="t-pub">
+                    <i class="fa-solid fa-skull"></i>
+                    <b>PUBLIC</b>
+                    <span class="t-price">0.00089</span>
+                </div>
             </div>
         </div>
     </div>
@@ -112,11 +129,8 @@
     <audio id="talkSound" src="https://www.myinstants.com/media/sounds/gta-san-andreas-ah-shit-here-we-go-again.mp3"></audio>
 
     <script>
-        // Check Ban Status on Load
         window.onload = function() {
-            if (localStorage.getItem('isBanned') === 'true') {
-                showBanScreen();
-            }
+            if (localStorage.getItem('isBanned') === 'true') showBanScreen();
         };
 
         function showBanScreen() {
@@ -126,7 +140,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // Floating Background
         const bgArea = document.getElementById('bgArea');
         for(let i=0; i<8; i++) {
             let img = document.createElement('img'); img.src = 'logo.png'; img.className = 'float-img';
@@ -139,7 +152,7 @@
                 localStorage.setItem('isBanned', 'true');
                 document.getElementById('getOutSound').play();
                 const b = document.getElementById('trapBubble');
-                b.innerText = "U Srs? WL over a Villa? Get outta here, you absolute clown!";
+                b.innerText = "SERIOUSLY? WL OVER REAL ASSETS? COPE HARDER, BOT!";
                 b.classList.add('show');
                 setTimeout(() => { showBanScreen(); }, 2500);
             } else {
@@ -155,16 +168,12 @@
             setTimeout(() => b.classList.remove('show'), 4000);
         }
 
-        // --- THE UPDATED DATABASE LOGIC ---
         async function fetchFile(fileName) {
             try {
                 const response = await fetch(fileName);
                 const text = await response.text();
                 return text.toLowerCase().split(/\r?\n/).map(addr => addr.trim()).filter(addr => addr !== "");
-            } catch (e) { 
-                console.error("Could not load " + fileName);
-                return []; 
-            }
+            } catch (e) { return []; }
         }
 
         async function checkEligibility() {
@@ -174,12 +183,11 @@
             
             if(!inputAddr) return;
 
-            resultText.innerText = "SEARCHING THE VOID...";
+            resultText.innerText = "QUERYING ON-CHAIN DATA...";
             document.querySelectorAll('.t-card').forEach(c => c.classList.remove('active'));
             btn.disabled = true;
 
-            // Load New Files
-            const [gtd30, gtd40, fcfs] = await Promise.all([
+            const [g30, g40, fcfs] = await Promise.all([
                 fetchFile('GTD30.csv'),
                 fetchFile('GTD40.csv'),
                 fetchFile('FCFS.csv')
@@ -187,20 +195,19 @@
 
             setTimeout(() => {
                 btn.disabled = false;
-                btn.innerText = "SCAN DATA";
+                btn.innerText = "INDEX DATA";
 
-                if (gtd30.includes(inputAddr) || gtd40.includes(inputAddr)) {
+                if (g30.includes(inputAddr) || g40.includes(inputAddr)) {
                     document.getElementById('t-gtd').classList.add('active');
-                    resultText.innerHTML = "<span style='color:white'>WELCOME KING. GTD SPOTTED.</span>";
+                    resultText.innerHTML = "<span style='color:white'>BULLISH. GTD ROLE DETECTED.</span>";
                 } 
                 else if (fcfs.includes(inputAddr)) {
                     document.getElementById('t-fcfs').classList.add('active');
-                    resultText.innerHTML = "<span style='color:white'>YOU'RE IN. FCFS SECURED.</span>";
+                    resultText.innerHTML = "<span style='color:white'>SECURED. FCFS SPOTTED.</span>";
                 } 
                 else {
-                    // Default to Public if not found in GTD or FCFS
                     document.getElementById('t-pub').classList.add('active');
-                    resultText.innerHTML = "<span style='color:white'>YOU'RE ON THE LIST (PUBLIC).</span>";
+                    resultText.innerHTML = "<span style='color:white'>YOU ARE PUBLIC. MINT THE FLOOR.</span>";
                 }
             }, 1000);
         }
