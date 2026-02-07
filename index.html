@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZOMBIEE | PERFECT RESPONSIVE</title>
+    <title>ZOMBIEE | THE RETURN</title>
     
     <link href="https://fonts.cdnfonts.com/css/monument-extended" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -17,7 +17,6 @@
             --font: 'Monument Extended', sans-serif; 
         }
 
-        /* White Mode - خلفية بيضاء بالكامل */
         body.white-mode {
             --bg: #ffffff; --text: #000; --accent: #ff0055;
             --card-bg: rgba(0, 0, 0, 0.05);
@@ -28,7 +27,19 @@
         body { 
             background: var(--bg); color: var(--text); 
             font-family: var(--font), sans-serif; 
-            overflow-x: hidden; transition: background 0.6s ease, color 0.6s ease;
+            overflow-x: hidden; transition: background 0.6s ease;
+        }
+
+        /* اللوجو المعلق والحبل */
+        .rope-container {
+            position: fixed; top: 0; right: 10%; width: 2px; height: 120px;
+            background: var(--accent); z-index: 9500; transition: height 0.1s ease-out;
+            box-shadow: 0 0 15px var(--accent);
+        }
+        .hanging-logo {
+            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
+            width: 50px; height: 50px; background: url('logo.png') center/contain no-repeat;
+            filter: drop-shadow(0 0 10px var(--accent));
         }
 
         #fragment-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: blur(5px); opacity: 0.3; }
@@ -48,26 +59,20 @@
 
         section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 5%; width: 100%; }
 
-        /* Hero Text - تعديل الحجم للموبايل */
-        .hero-title { 
-            font-size: clamp(2.8rem, 13vw, 10rem); /* صغرت الحد الأدنى من 3.5 لـ 2.8 */
-            line-height: 0.85; text-align: center; cursor: pointer; 
-        }
+        .hero-title { font-size: clamp(2.8rem, 13vw, 10rem); line-height: 0.85; text-align: center; cursor: pointer; }
 
         .data-grid {
             display: none; width: 100%; max-width: 900px;
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; margin-top: 40px;
+            grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 40px;
         }
 
         @media (min-width: 768px) {
-            .data-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+            .data-grid { grid-template-columns: repeat(4, 1fr); }
             #social-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         .item-card {
-            padding: 25px 15px; background: var(--card-bg); 
-            border: 1px solid rgba(128, 128, 128, 0.2);
+            padding: 25px 15px; background: var(--card-bg); border: 1px solid rgba(128, 128, 128, 0.2);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: 0.5s; opacity: 0; transform: translateY(20px);
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
@@ -75,7 +80,6 @@
         }
 
         .item-card.active { opacity: 1; transform: translateY(0); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .label { font-size: 0.45rem; color: var(--accent); margin-bottom: 8px; }
         .val { font-size: 0.85rem; font-weight: bold; }
 
         .art-viewport { position: relative; width: clamp(250px, 40vw, 400px); aspect-ratio: 3/4; perspective: 1000px; }
@@ -89,12 +93,14 @@
 
     <canvas id="fragment-canvas"></canvas>
 
+    <div class="rope-container" id="rope">
+        <div class="hanging-logo"></div>
+    </div>
+
     <div class="top-nav">
         <div id="countdown">MINT LIVE IN: 00:00:00</div>
         <button class="mode-switch" onclick="toggleMode()">WHITE MODE</button>
     </div>
-
-    <audio id="sfx-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
     <section>
         <div class="hero-title" onclick="destructText(this)">
@@ -114,10 +120,10 @@
     <section>
         <div onclick="showGrid('mint-grid')" style="cursor:pointer;"><h1>MINT INFO</h1></div>
         <div class="data-grid" id="mint-grid">
-            <div class="item-card"><span class="label">SUPPLY</span><span class="val">2,222</span></div>
-            <div class="item-card"><span class="label">GUARANTEED</span><span class="val">FREE</span></div>
-            <div class="item-card"><span class="label">FCFS</span><span class="val">0.0004</span></div>
-            <div class="item-card"><span class="label">PUBLIC</span><span class="val">0.00089</span></div>
+            <div class="item-card"><span class="val">SUPPLY: 2,222</span></div>
+            <div class="item-card"><span class="val">GUARANTEED: FREE</span></div>
+            <div class="item-card"><span class="val">FCFS: 0.0004</span></div>
+            <div class="item-card"><span class="val">PUBLIC: 0.00089</span></div>
         </div>
     </section>
 
@@ -125,22 +131,27 @@
         <div onclick="showGrid('social-grid')" style="cursor:pointer;"><h1>JOIN US</h1></div>
         <div class="data-grid" id="social-grid">
             <a href="https://opensea.io/collection/zombieeonbase/overview" target="_blank" class="item-card">
-                <i class="fa-solid fa-ship" style="font-size: 1.3rem;"></i>
-                <span class="val">OPENSEA</span>
+                <i class="fa-solid fa-ship" style="font-size: 1.3rem;"></i><span class="val">OPENSEA</span>
             </a>
             <a href="https://x.com/zombie_On_base" target="_blank" class="item-card">
-                <i class="fa-brands fa-x-twitter" style="font-size: 1.3rem;"></i>
-                <span class="val">X / TWITTER</span>
+                <i class="fa-brands fa-x-twitter" style="font-size: 1.3rem;"></i><span class="val">TWITTER</span>
             </a>
             <a href="#" class="item-card">
-                <i class="fa-solid fa-globe" style="font-size: 1.3rem;"></i>
-                <span class="val">WEBSITE</span>
+                <i class="fa-solid fa-globe" style="font-size: 1.3rem;"></i><span class="val">WEBSITE</span>
             </a>
         </div>
     </section>
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
+
+        // تمدد الحبل مع السكرول
+        window.addEventListener('scroll', () => {
+            const rope = document.getElementById('rope');
+            const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+            const newHeight = 120 + (scrollPercent * 400); // يتمدد بمقدار 400 بكسل إضافية
+            rope.style.height = newHeight + 'px';
+        });
 
         function updateTimer() {
             const now = new Date();
@@ -173,27 +184,6 @@
             }
         }
 
-        const canvas = document.getElementById('fragment-canvas');
-        const ctx = canvas.getContext('2d');
-        let parts = [];
-        const logo = new Image(); logo.src = 'logo.png';
-        function initBG() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            parts = Array.from({length: 20}, () => ({
-                x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-                s: Math.random()*15+10, vy: Math.random()*0.15 + 0.05
-            }));
-        }
-        function drawBG() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            parts.forEach(p => {
-                p.y -= p.vy; if(p.y < -50) p.y = canvas.height + 50;
-                ctx.globalAlpha = 0.12; ctx.drawImage(logo, p.x, p.y, p.s, p.s);
-            });
-            requestAnimationFrame(drawBG);
-        }
-        logo.onload = () => { initBG(); drawBG(); };
-
         function destructText(el) {
             const txt = el.querySelector('h1') || el;
             if(!txt.querySelector('.letter')) {
@@ -208,9 +198,7 @@
         gsap.utils.toArray(".art-card").forEach((card, i) => {
             gsap.to(card, {
                 scrollTrigger: { trigger: "#art-sec", start: "top 20%", end: "bottom top", scrub: 1 },
-                x: (i - 1) * (window.innerWidth < 768 ? 250 : 350), 
-                rotation: (i - 1) * 20, 
-                opacity: 0
+                x: (i - 1) * (window.innerWidth < 768 ? 200 : 350), rotation: (i - 1) * 20, opacity: 0
             });
         });
     </script>
