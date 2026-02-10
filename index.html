@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZOMBIEE | THE RETURN</title>
+    <title>ZOMBIEE | ADAPTIVE UI</title>
     
     <link href="https://fonts.cdnfonts.com/css/monument-extended" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -27,64 +27,83 @@
         body { 
             background: var(--bg); color: var(--text); 
             font-family: var(--font), sans-serif; 
-            overflow-x: hidden; transition: background 0.6s ease;
-        }
-
-        /* اللوجو المعلق والحبل */
-        .rope-container {
-            position: fixed; top: 0; right: 10%; width: 2px; height: 120px;
-            background: var(--accent); z-index: 9500; transition: height 0.1s ease-out;
-            box-shadow: 0 0 15px var(--accent);
-        }
-        .hanging-logo {
-            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
-            width: 50px; height: 50px; background: url('logo.png') center/contain no-repeat;
-            filter: drop-shadow(0 0 10px var(--accent));
+            overflow-x: hidden; transition: background 0.5s ease, color 0.5s ease;
         }
 
         #fragment-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: blur(5px); opacity: 0.3; }
 
         .top-nav {
-            position: fixed; top: 0; width: 100%; height: 45px;
+            position: fixed; top: 0; width: 100%; height: 50px;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 5%; z-index: 10000; background: var(--accent); color: #000;
-            font-weight: 900; font-size: 0.6rem; letter-spacing: 2px;
+            font-weight: 900; font-size: 0.7rem; letter-spacing: 1px;
         }
 
         .mode-switch {
             background: #000; color: #fff; border: none; padding: 5px 12px;
-            border-radius: 4px; cursor: pointer; font-family: var(--font); font-size: 0.5rem;
+            border-radius: 4px; cursor: pointer; font-family: var(--font); font-size: 0.5rem; font-weight: 900;
         }
-        body.white-mode .mode-switch { background: #fff; color: #000; }
 
-        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 5%; width: 100%; }
+        section { 
+            min-height: 100vh; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; padding: 100px 5%; width: 100%; 
+        }
 
-        .hero-title { font-size: clamp(2.8rem, 13vw, 10rem); line-height: 0.85; text-align: center; cursor: pointer; }
+        /* Thicker Hero Text */
+        .hero-title { 
+            font-size: clamp(3rem, 15vw, 10rem); 
+            line-height: 0.8; text-align: center; cursor: pointer; font-weight: 900;
+        }
 
+        /* Better Grid for Mobile */
         .data-grid {
-            display: none; width: 100%; max-width: 900px;
-            grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 40px;
+            display: none; width: 100%; max-width: 1100px;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; margin-top: 40px;
         }
 
         @media (min-width: 768px) {
-            .data-grid { grid-template-columns: repeat(4, 1fr); }
-            #social-grid { grid-template-columns: repeat(3, 1fr); }
+            .data-grid { grid-template-columns: repeat(4, 1fr); gap: 25px; }
         }
 
         .item-card {
-            padding: 25px 15px; background: var(--card-bg); border: 1px solid rgba(128, 128, 128, 0.2);
+            padding: 30px 15px; background: var(--card-bg); 
+            border: 1px solid rgba(128, 128, 128, 0.2);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: 0.5s; opacity: 0; transform: translateY(20px);
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
             text-decoration: none; color: inherit;
         }
 
-        .item-card.active { opacity: 1; transform: translateY(0); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .val { font-size: 0.85rem; font-weight: bold; }
+        .item-card.active { 
+            opacity: 1; transform: translateY(0); border-color: var(--accent); 
+            box-shadow: 0 0 20px var(--accent);
+        }
 
-        .art-viewport { position: relative; width: clamp(250px, 40vw, 400px); aspect-ratio: 3/4; perspective: 1000px; }
+        .label { font-size: 0.5rem; color: var(--accent); margin-bottom: 10px; font-weight: 900; }
+        .val { font-size: 0.8rem; font-weight: 900; }
+
+        /* Art Stack */
+        .art-viewport { position: relative; width: clamp(260px, 40vw, 400px); aspect-ratio: 3/4; perspective: 1000px; }
         .art-card { position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; background: #000; }
         .art-card img { width: 100%; height: 100%; object-fit: cover; }
+
+        .header-logo { position: fixed; top: 70px; left: 5%; z-index: 9000; font-size: 1rem; color: var(--accent); font-weight: 900; }
+
+        /* Style for MINT Button to match original theme */
+        .mint-cta {
+            margin-top: 30px;
+            padding: 20px 40px;
+            background: var(--accent);
+            color: #000;
+            font-family: var(--font);
+            font-weight: 900;
+            font-size: 1.2rem;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        .mint-cta:hover { transform: scale(1.1); }
 
         .letter { display: inline-block; }
     </style>
@@ -93,20 +112,19 @@
 
     <canvas id="fragment-canvas"></canvas>
 
-    <div class="rope-container" id="rope">
-        <div class="hanging-logo"></div>
-    </div>
-
     <div class="top-nav">
-        <div id="countdown">MINT LIVE IN: 00:00:00</div>
+        <div id="mint-status">MINTED: <span id="mint-count">1516</span> / 1700</div>
         <button class="mode-switch" onclick="toggleMode()">WHITE MODE</button>
     </div>
+
+    <div class="header-logo" onclick="destructText(this)">ZOMBIEE</div>
 
     <section>
         <div class="hero-title" onclick="destructText(this)">
             <h1>DONT</h1>
             <h1>SLEEP</h1>
         </div>
+        <a href="https://opensea.io/collection/zombieeonbase" target="_blank" class="mint-cta">MINT LIVE</a>
     </section>
 
     <section id="art-sec">
@@ -118,72 +136,97 @@
     </section>
 
     <section>
-        <div onclick="showGrid('mint-grid')" style="cursor:pointer;"><h1>MINT INFO</h1></div>
+        <div onclick="showGrid('mint-grid')" style="cursor:pointer;"><h1 style="font-weight: 900;">MINT INFO</h1></div>
         <div class="data-grid" id="mint-grid">
-            <div class="item-card"><span class="val">SUPPLY: 2,222</span></div>
-            <div class="item-card"><span class="val">GUARANTEED: FREE</span></div>
-            <div class="item-card"><span class="val">FCFS: 0.0004</span></div>
-            <div class="item-card"><span class="val">PUBLIC: 0.00089</span></div>
+            <div class="item-card"><span class="label">SUPPLY</span><span class="val">1,700</span></div>
+            <div class="item-card"><span class="label">WL</span><span class="val">FREE</span></div>
+            <div class="item-card"><span class="label">PUBLIC</span><span class="val">0.0004</span></div>
+            <div class="item-card"><span class="label">NETWORK</span><span class="val">BASE</span></div>
         </div>
     </section>
 
     <section>
-        <div onclick="showGrid('social-grid')" style="cursor:pointer;"><h1>JOIN US</h1></div>
+        <div onclick="showGrid('social-grid')" style="cursor:pointer;"><h1 style="font-weight: 900;">JOIN US</h1></div>
         <div class="data-grid" id="social-grid">
-            <a href="https://opensea.io/collection/zombieeonbase/overview" target="_blank" class="item-card">
-                <i class="fa-solid fa-ship" style="font-size: 1.3rem;"></i><span class="val">OPENSEA</span>
+            <a href="https://opensea.io/collection/zombieeonbase" target="_blank" class="item-card">
+                <i class="fa-solid fa-ship" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val">OPENSEA</span>
             </a>
-            <a href="https://x.com/zombie_On_base" target="_blank" class="item-card">
-                <i class="fa-brands fa-x-twitter" style="font-size: 1.3rem;"></i><span class="val">TWITTER</span>
+            <a href="https://x.com/ZombieeOnBase" target="_blank" class="item-card">
+                <i class="fa-brands fa-x-twitter" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val">TWITTER</span>
             </a>
-            <a href="#" class="item-card">
-                <i class="fa-solid fa-globe" style="font-size: 1.3rem;"></i><span class="val">WEBSITE</span>
-            </a>
+            <div class="item-card">
+                <i class="fa-brands fa-discord" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val" style="opacity: 0.5;">SOON</span>
+            </div>
+            <div class="item-card">
+                <i class="fa-solid fa-globe" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val">WEBSITE</span>
+            </div>
         </div>
     </section>
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // تمدد الحبل مع السكرول
-        window.addEventListener('scroll', () => {
-            const rope = document.getElementById('rope');
-            const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-            const newHeight = 120 + (scrollPercent * 400); // يتمدد بمقدار 400 بكسل إضافية
-            rope.style.height = newHeight + 'px';
-        });
-
-        function updateTimer() {
-            const now = new Date();
-            const target = new Date();
-            target.setHours(18, 0, 0, 0);
-            if (now > target) target.setDate(target.getDate() + 1);
-            const diff = target - now;
-            const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-            const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-            const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-            document.getElementById('countdown').innerText = `MINT LIVE IN: ${h}:${m}:${s}`;
+        // 1. Live Tracker Logic (Starts at 1516)
+        let count = 1516;
+        function updateCounter() {
+            // Fake live movement logic: increases randomly to feel real
+            if (count < 1700) {
+                count += Math.floor(Math.random() * 2); 
+                document.getElementById('mint-count').innerText = count;
+            } else {
+                document.getElementById('mint-status').innerText = "SOLD OUT";
+            }
         }
-        setInterval(updateTimer, 1000);
+        setInterval(updateCounter, 8000); // Updates every 8 seconds
 
+        // 2. Mode Toggle
         function toggleMode() {
             document.body.classList.toggle('white-mode');
             const btn = document.querySelector('.mode-switch');
             btn.innerText = document.body.classList.contains('white-mode') ? "DARK MODE" : "WHITE MODE";
         }
 
+        // 3. Sequential Grid Show (Keep original animation)
         function showGrid(id) {
             const g = document.getElementById(id);
             const cards = g.querySelectorAll('.item-card');
             if(getComputedStyle(g).display === 'none') {
                 g.style.display = 'grid';
-                cards.forEach((c, i) => setTimeout(() => c.classList.add('active'), i * 150));
+                cards.forEach((c, i) => {
+                    setTimeout(() => c.classList.add('active'), i * 150);
+                });
             } else {
                 cards.forEach(c => c.classList.remove('active'));
                 setTimeout(() => g.style.display = 'none', 500);
             }
         }
 
+        // 4. Fragment Background (Slow & Original)
+        const canvas = document.getElementById('fragment-canvas');
+        const ctx = canvas.getContext('2d');
+        let parts = [];
+        const logo = new Image(); logo.src = 'logo.png';
+
+        function initBG() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            parts = Array.from({length: 30}, () => ({
+                x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                s: Math.random()*20+10, vy: Math.random()*0.2 + 0.1
+            }));
+        }
+        function drawBG() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            parts.forEach(p => {
+                p.y -= p.vy;
+                if(p.y < -50) p.y = canvas.height + 50;
+                ctx.globalAlpha = 0.2;
+                ctx.drawImage(logo, p.x, p.y, p.s, p.s);
+            });
+            requestAnimationFrame(drawBG);
+        }
+        logo.onload = () => { initBG(); drawBG(); };
+
+        // 5. Text Destruct
         function destructText(el) {
             const txt = el.querySelector('h1') || el;
             if(!txt.querySelector('.letter')) {
@@ -191,14 +234,15 @@
             }
             const letters = txt.querySelectorAll('.letter');
             gsap.timeline()
-                .to(letters, { x: () => gsap.utils.random(-250, 250), y: () => gsap.utils.random(-250, 250), opacity: 0, duration: 0.5 })
+                .to(letters, { x: () => gsap.utils.random(-300, 300), y: () => gsap.utils.random(-300, 300), opacity: 0, duration: 0.5 })
                 .to(letters, { x: 0, y: 0, opacity: 1, duration: 0.7, stagger: 0.02, ease: "back.out(2)" });
         }
 
+        // Art Scroll
         gsap.utils.toArray(".art-card").forEach((card, i) => {
             gsap.to(card, {
                 scrollTrigger: { trigger: "#art-sec", start: "top 20%", end: "bottom top", scrub: 1 },
-                x: (i - 1) * (window.innerWidth < 768 ? 200 : 350), rotation: (i - 1) * 20, opacity: 0
+                x: (i - 1) * 350, rotation: (i - 1) * 20, opacity: 0
             });
         });
     </script>
