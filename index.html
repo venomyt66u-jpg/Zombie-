@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZOMBIEE | ADAPTIVE UI</title>
+    <title>ZOMBIEE | WAKE UP</title>
     
     <link href="https://fonts.cdnfonts.com/css/monument-extended" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root { 
-            --accent: #bcff00; --bg: #000; --text: #fff;
+            --accent: #bcff00; 
+            --bg: #000; 
+            --text: #fff;
             --card-bg: rgba(255, 255, 255, 0.05);
             --font: 'Monument Extended', sans-serif; 
         }
 
-        body.white-mode {
-            --bg: #ffffff; --text: #000; --accent: #ff0055;
-            --card-bg: rgba(0, 0, 0, 0.05);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background: var(--bg); color: var(--text); 
             font-family: var(--font), sans-serif; 
-            overflow-x: hidden; transition: background 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
         }
 
         #fragment-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: blur(5px); opacity: 0.3; }
@@ -36,28 +33,21 @@
             position: fixed; top: 0; width: 100%; height: 50px;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 5%; z-index: 10000; background: var(--accent); color: #000;
-            font-weight: 900; font-size: 0.7rem; letter-spacing: 1px;
-        }
-
-        .mode-switch {
-            background: #000; color: #fff; border: none; padding: 5px 12px;
-            border-radius: 4px; cursor: pointer; font-family: var(--font); font-size: 0.5rem; font-weight: 900;
+            font-weight: 900; font-size: 0.65rem; letter-spacing: 1px;
         }
 
         section { 
             min-height: 100vh; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; padding: 100px 5%; width: 100%; 
+            justify-content: center; align-items: center; padding: 80px 5%; width: 100%; 
         }
 
-        /* Thicker Hero Text */
         .hero-title { 
-            font-size: clamp(3rem, 15vw, 10rem); 
+            font-size: clamp(3rem, 18vw, 10rem); 
             line-height: 0.8; text-align: center; cursor: pointer; font-weight: 900;
         }
 
-        /* Better Grid for Mobile */
         .data-grid {
-            display: none; width: 100%; max-width: 1100px;
+            display: grid; width: 100%; max-width: 1100px;
             grid-template-columns: repeat(2, 1fr); 
             gap: 15px; margin-top: 40px;
         }
@@ -66,44 +56,45 @@
             .data-grid { grid-template-columns: repeat(4, 1fr); gap: 25px; }
         }
 
+        /* تأثير التلاشي للأقسام */
+        .fade-section { opacity: 0; transform: translateY(20px); transition: 0.6s ease-out; }
+        .fade-section.active { opacity: 1; transform: translateY(0); }
+
         .item-card {
             padding: 30px 15px; background: var(--card-bg); 
             border: 1px solid rgba(128, 128, 128, 0.2);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: 0.5s; opacity: 0; transform: translateY(20px);
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: 0.5s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
             text-decoration: none; color: inherit;
         }
 
-        .item-card.active { 
-            opacity: 1; transform: translateY(0); border-color: var(--accent); 
-            box-shadow: 0 0 20px var(--accent);
-        }
+        .item-card:hover { border-color: var(--accent); box-shadow: 0 0 20px var(--accent); }
+        .item-card.disabled { opacity: 0.5; cursor: not-allowed; }
 
         .label { font-size: 0.5rem; color: var(--accent); margin-bottom: 10px; font-weight: 900; }
-        .val { font-size: 0.8rem; font-weight: 900; }
+        .val { font-size: 0.75rem; font-weight: 900; }
 
-        /* Art Stack */
+        /* Art Stack & Soon Overlay */
         .art-viewport { position: relative; width: clamp(260px, 40vw, 400px); aspect-ratio: 3/4; perspective: 1000px; }
         .art-card { position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; background: #000; }
         .art-card img { width: 100%; height: 100%; object-fit: cover; }
 
+        .soon-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transition: 0.5s; z-index: 10;
+        }
+        .soon-overlay h2 { color: var(--accent); font-size: 2rem; letter-spacing: 5px; }
+        .reveal-soon .soon-overlay { opacity: 1; }
+
         .header-logo { position: fixed; top: 70px; left: 5%; z-index: 9000; font-size: 1rem; color: var(--accent); font-weight: 900; }
 
-        /* Style for MINT Button to match original theme */
         .mint-cta {
-            margin-top: 30px;
-            padding: 20px 40px;
-            background: var(--accent);
-            color: #000;
-            font-family: var(--font);
-            font-weight: 900;
-            font-size: 1.2rem;
+            margin-top: 30px; padding: 20px 40px; background: var(--accent);
+            color: #000; font-family: var(--font); font-weight: 900; font-size: 1.1rem;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            text-decoration: none;
-            transition: transform 0.3s;
+            text-decoration: none; transition: 0.3s;
         }
-        .mint-cta:hover { transform: scale(1.1); }
 
         .letter { display: inline-block; }
     </style>
@@ -113,52 +104,53 @@
     <canvas id="fragment-canvas"></canvas>
 
     <div class="top-nav">
-        <div id="mint-status">MINTED: <span id="mint-count">1516</span> / 1700</div>
-        <button class="mode-switch" onclick="toggleMode()">WHITE MODE</button>
+        <div id="mint-status">MINTED: 1700 / 1700</div>
+        <div style="font-weight: 900;">SOLD OUT</div>
     </div>
 
-    <div class="header-logo" onclick="destructText(this)">ZOMBIEE</div>
+    <div class="header-logo">ZOMBIEE</div>
 
     <section>
         <div class="hero-title" onclick="destructText(this)">
-            <h1>DONT</h1>
-            <h1>SLEEP</h1>
+            <h1>WAKE</h1>
+            <h1 style="color: var(--accent)">UP</h1>
         </div>
-        <a href="https://opensea.io/collection/zombieeonbase" target="_blank" class="mint-cta">MINT LIVE</a>
+        <a href="https://opensea.io/collection/zombieeonbase" target="_blank" class="mint-cta">COLLECTION</a>
     </section>
 
-    <section id="art-sec">
-        <div class="art-viewport">
+    <section id="art-sec" class="fade-section">
+        <div class="art-viewport" id="target-viewport">
+            <div class="soon-overlay"><h2>SOON</h2></div>
             <div class="art-card" style="z-index: 3;"><img src="nft3.png"></div>
             <div class="art-card" style="z-index: 2;"><img src="nft2.png"></div>
             <div class="art-card" style="z-index: 1;"><img src="nft1.png"></div>
         </div>
     </section>
 
-    <section>
-        <div onclick="showGrid('mint-grid')" style="cursor:pointer;"><h1 style="font-weight: 900;">MINT INFO</h1></div>
-        <div class="data-grid" id="mint-grid">
+    <section class="fade-section">
+        <h1 style="font-size: 1.2rem; margin-bottom: 20px;">SYSTEM INFO</h1>
+        <div class="data-grid">
             <div class="item-card"><span class="label">SUPPLY</span><span class="val">1,700</span></div>
             <div class="item-card"><span class="label">WL</span><span class="val">FREE</span></div>
-            <div class="item-card"><span class="label">PUBLIC</span><span class="val">0.0004</span></div>
+            <div class="item-card"><span class="label">STATUS</span><span class="val">SOLD OUT</span></div>
             <div class="item-card"><span class="label">NETWORK</span><span class="val">BASE</span></div>
         </div>
     </section>
 
-    <section>
-        <div onclick="showGrid('social-grid')" style="cursor:pointer;"><h1 style="font-weight: 900;">JOIN US</h1></div>
-        <div class="data-grid" id="social-grid">
+    <section class="fade-section">
+        <h1 style="font-size: 1.2rem; margin-bottom: 20px;">SOCIALS</h1>
+        <div class="data-grid">
             <a href="https://opensea.io/collection/zombieeonbase" target="_blank" class="item-card">
-                <i class="fa-solid fa-ship" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val">OPENSEA</span>
+                <i class="fa-solid fa-ship"></i><span class="val">OPENSEA</span>
             </a>
             <a href="https://x.com/ZombieeOnBase" target="_blank" class="item-card">
-                <i class="fa-brands fa-x-twitter" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val">TWITTER</span>
+                <i class="fa-brands fa-x-twitter"></i><span class="val">TWITTER</span>
             </a>
-            <div class="item-card">
-                <i class="fa-brands fa-discord" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val" style="opacity: 0.5;">SOON</span>
+            <div class="item-card disabled">
+                <i class="fa-brands fa-discord"></i><span class="val">SOON</span>
             </div>
             <div class="item-card">
-                <i class="fa-solid fa-globe" style="font-size: 1.5rem; margin-bottom: 5px;"></i><span class="val">WEBSITE</span>
+                <i class="fa-solid fa-globe"></i><span class="val">WEBSITE</span>
             </div>
         </div>
     </section>
@@ -166,85 +158,70 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // 1. Live Tracker Logic (Starts at 1516)
-        let count = 1516;
-        function updateCounter() {
-            // Fake live movement logic: increases randomly to feel real
-            if (count < 1700) {
-                count += Math.floor(Math.random() * 2); 
-                document.getElementById('mint-count').innerText = count;
-            } else {
-                document.getElementById('mint-status').innerText = "SOLD OUT";
-            }
-        }
-        setInterval(updateCounter, 8000); // Updates every 8 seconds
+        // تم حذف منطق updateCounter و setInterval الخاص بالـ Live Tracker
 
-        // 2. Mode Toggle
-        function toggleMode() {
-            document.body.classList.toggle('white-mode');
-            const btn = document.querySelector('.mode-switch');
-            btn.innerText = document.body.classList.contains('white-mode') ? "DARK MODE" : "WHITE MODE";
-        }
+        // 1. Reveal Soon Logic
+        ScrollTrigger.create({
+            trigger: "#art-sec",
+            start: "top 40%",
+            onEnter: () => document.getElementById('target-viewport').classList.add('reveal-soon'),
+            onLeaveBack: () => document.getElementById('target-viewport').classList.remove('reveal-soon')
+        });
 
-        // 3. Sequential Grid Show (Keep original animation)
-        function showGrid(id) {
-            const g = document.getElementById(id);
-            const cards = g.querySelectorAll('.item-card');
-            if(getComputedStyle(g).display === 'none') {
-                g.style.display = 'grid';
-                cards.forEach((c, i) => {
-                    setTimeout(() => c.classList.add('active'), i * 150);
-                });
-            } else {
-                cards.forEach(c => c.classList.remove('active'));
-                setTimeout(() => g.style.display = 'none', 500);
-            }
-        }
-
-        // 4. Fragment Background (Slow & Original)
-        const canvas = document.getElementById('fragment-canvas');
-        const ctx = canvas.getContext('2d');
-        let parts = [];
-        const logo = new Image(); logo.src = 'logo.png';
-
-        function initBG() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            parts = Array.from({length: 30}, () => ({
-                x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-                s: Math.random()*20+10, vy: Math.random()*0.2 + 0.1
-            }));
-        }
-        function drawBG() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            parts.forEach(p => {
-                p.y -= p.vy;
-                if(p.y < -50) p.y = canvas.height + 50;
-                ctx.globalAlpha = 0.2;
-                ctx.drawImage(logo, p.x, p.y, p.s, p.s);
+        // 2. Fade Section Logic
+        const fadeSections = document.querySelectorAll('.fade-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
             });
-            requestAnimationFrame(drawBG);
-        }
-        logo.onload = () => { initBG(); drawBG(); };
+        }, { threshold: 0.1 });
+        fadeSections.forEach(s => observer.observe(s));
 
-        // 5. Text Destruct
-        function destructText(el) {
-            const txt = el.querySelector('h1') || el;
-            if(!txt.querySelector('.letter')) {
-                txt.innerHTML = txt.innerText.split('').map(c => `<span class="letter">${c}</span>`).join('');
-            }
-            const letters = txt.querySelectorAll('.letter');
-            gsap.timeline()
-                .to(letters, { x: () => gsap.utils.random(-300, 300), y: () => gsap.utils.random(-300, 300), opacity: 0, duration: 0.5 })
-                .to(letters, { x: 0, y: 0, opacity: 1, duration: 0.7, stagger: 0.02, ease: "back.out(2)" });
-        }
-
-        // Art Scroll
+        // 3. Art Scroll (Original Style)
         gsap.utils.toArray(".art-card").forEach((card, i) => {
             gsap.to(card, {
                 scrollTrigger: { trigger: "#art-sec", start: "top 20%", end: "bottom top", scrub: 1 },
                 x: (i - 1) * 350, rotation: (i - 1) * 20, opacity: 0
             });
         });
+
+        // 4. Text Destruct
+        function destructText(el) {
+            const h1s = el.querySelectorAll('h1');
+            h1s.forEach(txt => {
+                if(!txt.querySelector('.letter')) {
+                    txt.innerHTML = txt.innerText.split('').map(c => `<span class="letter">${c}</span>`).join('');
+                }
+                const letters = txt.querySelectorAll('.letter');
+                gsap.timeline()
+                    .to(letters, { x: () => gsap.utils.random(-200, 200), y: () => gsap.utils.random(-200, 200), opacity: 0, duration: 0.4 })
+                    .to(letters, { x: 0, y: 0, opacity: 1, duration: 0.6, stagger: 0.01, ease: "back.out(2)" });
+            });
+        }
+
+        // 5. Fragment Background (Original Style)
+        const canvas = document.getElementById('fragment-canvas');
+        const ctx = canvas.getContext('2d');
+        let parts = [];
+        function initBG() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            parts = Array.from({length: 30}, () => ({
+                x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                s: Math.random()*4+1, vy: Math.random()*0.2 + 0.1
+            }));
+        }
+        function drawBG() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "#bcff00";
+            parts.forEach(p => {
+                p.y -= p.vy; if(p.y < -10) p.y = canvas.height + 10;
+                ctx.globalAlpha = 0.2;
+                ctx.fillRect(p.x, p.y, p.s, p.s);
+            });
+            requestAnimationFrame(drawBG);
+        }
+        initBG(); drawBG();
+        window.addEventListener('resize', initBG);
     </script>
 </body>
 </html>
